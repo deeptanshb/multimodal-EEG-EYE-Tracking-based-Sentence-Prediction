@@ -1,4 +1,4 @@
-# EEG2Text — Brain-to-Language Decoding with Quantum-Classical Hybrid AI
+# EEG+EYE2Text — Brain-to-Language Decoding with Quantum-Classical Hybrid AI
 
 > Decoding natural language from EEG brain signals using a multimodal transformer architecture, hierarchical temporal pooling, LoRA fine-tuning, and a 4-qubit variational quantum circuit — evaluated on the ZuCo corpus across four model generations (V5 → V8 → V9 → QML hybrid).
 
@@ -87,7 +87,7 @@ Key addition over V9:
   - ~8,476 QML parameters (tiny on top of 147M total)
 - **PennyLane** `lightning.qubit` simulator with adjoint differentiation
 - 10-epoch fine-tune: QML_LR=3e-4, rest=1e-6, CosineAnnealingLR, patience=3
-- TF BLEU-1: **30.86%** | ROUGE-1: **36.03%** | BERTScore F1: **85.51%**
+- TF BLEU-1: **31.02%** | ROUGE-1: **36.03%** | BERTScore F1: **85.51%**
 
 ---
 
@@ -357,12 +357,11 @@ See Section 8 for full instructions.
 
 | Metric | V5 | V8 | V9 classical | V9+QML |
 |--------|----|----|-------------|--------|
-| TF BLEU-1 | 29.24% | 30.40% | 30.55% | **30.86%** |
+| TF BLEU-1 | 29.24% | 30.40% | 30.71% | **31.02%** |
 | TF BLEU-4 | — | 4.30% | 4.28% | **4.46%** |
 | TF ROUGE-1 | 33.92% | 35.78% | 35.96% | **36.03%** |
 | TF ROUGE-L | — | 30.68% | 30.58% | **30.83%** |
-| FG BLEU-1 | — | — | 6.37% | 6.88% |
-| TF/FG ratio | — | — | 4.80× | 4.49× |
+| FG BLEU-1 | - | 15.73% | 16.37% | 16.88% |
 | BERTScore F1 | — | 85.53% | 85.50% | **85.51%** |
 
 ### Per-condition BLEU-1 (V9+QML)
