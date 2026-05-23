@@ -1,0 +1,89 @@
+{
+  "model": "B3+QFP noisy (hybrid_qml_noisy_v9_best.pt)",
+  "n_samples": 2032,
+  "categories": {
+    "3": {
+      "name": "Semantic drift",
+      "n": 9,
+      "pct": 0.44,
+      "mean_bleu1": 11.84,
+      "mean_bert_f1": 79.28
+    },
+    "4": {
+      "name": "Partial recovery",
+      "n": 519,
+      "pct": 25.54,
+      "mean_bleu1": 17.31,
+      "mean_bert_f1": 83.42
+    },
+    "5": {
+      "name": "Lexical substitution",
+      "n": 1169,
+      "pct": 57.53,
+      "mean_bleu1": 30.27,
+      "mean_bert_f1": 86.02
+    },
+    "6": {
+      "name": "Successful decoding",
+      "n": 335,
+      "pct": 16.49,
+      "mean_bleu1": 45.7,
+      "mean_bert_f1": 86.93
+    }
+  },
+  "examples": {
+    "3": {
+      "category": "Semantic drift",
+      "ref": "He has a son, Weston Coppola Cage (born 1990), by model Kristina Fulton.",
+      "pred": "married been daughter, George,oleyola,,born August, and his andin ( ( H",
+      "bleu1": 0.0,
+      "bert_f1": 79.5,
+      "cond": "TSR"
+    },
+    "4": {
+      "category": "Partial recovery",
+      "ref": "His father, Josiah Franklin, was a tallow chandler, a maker of candles, who married twice.",
+      "pred": "father was Johniah,, was a prominent, farmerieftler. and farmer of fine and and was a. H",
+      "bleu1": 18.8,
+      "bert_f1": 84.6,
+      "cond": "NR"
+    },
+    "5": {
+      "category": "Lexical substitution",
+      "ref": "Elvis Aron Presley (January 8, 1935 - August 16, 1977), also known as The King of Rock and Roll (sometimes shortened to ",
+      "pred": "aine wasmitofley (born 18, 18 - April 31, 2005) a known as Elvis President of the and Roll,born spelled to The King of w",
+      "bleu1": 40.0,
+      "bert_f1": 86.5,
+      "cond": "NR"
+    },
+    "6": {
+      "category": "Successful decoding",
+      "ref": "He was also a fan of hockey and was inducted into the United States Hockey Hall of Fame in 1993.",
+      "pred": "was awarded a member of the and was aed into the Hockey States Hockey Hall of Fame in 1996. H",
+      "bleu1": 70.0,
+      "bert_f1": 89.1,
+      "cond": "TSR"
+    }
+  },
+  "per_condition": {
+    "NR": {
+      "Semantic drift": 0.3,
+      "Partial recovery": 23.3,
+      "Lexical substitution": 61.0,
+      "Successful decoding": 15.3
+    },
+    "TSR": {
+      "Semantic drift": 0.8,
+      "Partial recovery": 13.3,
+      "Lexical substitution": 63.2,
+      "Successful decoding": 22.6
+    },
+    "SR": {
+      "Semantic drift": 0.1,
+      "Partial recovery": 40.7,
+      "Lexical substitution": 48.1,
+      "Successful decoding": 11.0
+    }
+  },
+  "latex_table": "\n\\begin{table}[!htbp]\n\\centering\n\\caption{\\textbf{Supplementary Table~S3 $|$ Error analysis of\nB3+QFP noisy on 2,032 validation samples.}\nFour error categories applied in priority order (top to bottom).\nBLEU-1 and BERTScore~F1 show mean $\\pm$ std within each category,\ncomputed on blob-stripped predictions (trailing degenerate token\nrepetitions, e.g.\\ \\texttt{TheThe\\ldots}, present in ${\\sim}98\\%$ of\nteacher-forced outputs as a GPT-2 EOS artefact, were removed uniformly\nbefore scoring and are not treated as a per-sample error category).\nPer-condition fractions (NR/TSR/SR) show that SR has the highest\nsemantic-drift rate, consistent with its shorter fixation durations\nreducing EEG signal quality.\nThreshold definitions (applied in priority order): syntactic collapse\nlength-ratio $<$0.35; semantic drift BERTScore $<$0.800;\npartial recovery BERTScore 0.800--0.860 and BLEU-1 $<$0.25;\nlexical substitution BERTScore $\\geq$0.800 and BLEU-1 $\\in[0.25,0.40)$,\nor BERTScore $\\geq$0.860 and BLEU-1 $<$0.40;\nsuccessful decoding BLEU-1 $\\geq$0.40.}\n\\label{stab:error_analysis}\n\\small\n\\begin{tabular}{clrrrrrr}\n\\toprule\n\\textbf{Cat} & \\textbf{Category} & \\textbf{$n$} & \\textbf{\\%} &\n  \\textbf{BLEU-1} & \\textbf{BERT-F1} & \\textbf{NR\\%} & \\textbf{TSR\\%} \\\\\n\\midrule\n  3 & Semantic drift & 9 & 0.4\\% & 11.8$\\pm$13.7\\% & 79.3$\\pm$0.6\\% & 0.3\\% & 0.8\\% \\\\\n  4 & Partial recovery & 519 & 25.5\\% & 17.3$\\pm$6.6\\% & 83.4$\\pm$1.4\\% & 23.3\\% & 13.3\\% \\\\\n  5 & Lexical substitution & 1169 & 57.5\\% & 30.3$\\pm$5.9\\% & 86.0$\\pm$2.1\\% & 61.0\\% & 63.2\\% \\\\\n  \\textbf{6} & \\textbf{Successful decoding} & \\textbf{335} & \\textbf{16.5\\%} & \\textbf{45.7$\\pm$6.0\\%} & \\textbf{86.9$\\pm$2.0\\%} & \\textbf{15.3\\%} & \\textbf{22.6\\%} \\\\\n\\bottomrule\n\\end{tabular}\n\\end{table}\n"
+}

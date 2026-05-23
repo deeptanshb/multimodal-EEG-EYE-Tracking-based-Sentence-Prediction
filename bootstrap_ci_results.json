@@ -1,0 +1,51 @@
+{
+  "n_bootstrap": 10000,
+  "seed": 42,
+  "qfp_vs_v9": {
+    "metric": "BLEU-1",
+    "delta_pp": 0.008,
+    "ci_lo": -0.0291,
+    "ci_hi": 0.0469,
+    "p_value": 0.6683
+  },
+  "qfp_vs_downup": {
+    "metric": "BLEU-1",
+    "delta_pp": 0.008,
+    "ci_lo": -0.028,
+    "ci_hi": 0.0463,
+    "p_value": 0.6816
+  },
+  "qfp_vs_v9_rouge1": {
+    "metric": "ROUGE-1",
+    "delta_pp": 0.0249,
+    "ci_lo": -0.0147,
+    "ci_hi": 0.0684,
+    "p_value": 0.2419
+  },
+  "extended": {
+    "B3_absolute_ci": {
+      "metric": "sentence_BLEU-1",
+      "mean_pct": 28.6858,
+      "ci_lo": 28.2028,
+      "ci_hi": 29.1741,
+      "n_boot": 10000,
+      "note": "Absolute CI for Baseline-3; B2 (30.40%) is below lower bound if b2_outside_ci=True, providing indirect B3>B2 support.",
+      "B2_outside_ci": false
+    },
+    "QFP_absolute_ci": {
+      "metric": "sentence_BLEU-1",
+      "mean_pct": 28.6938,
+      "ci_lo": 28.2073,
+      "ci_hi": 29.1846,
+      "n_boot": 10000
+    },
+    "B2_to_B3_snr_context": {
+      "B2_corpus_bleu": 30.4,
+      "B3_mc_mean": 27.4666,
+      "B3_mc_std": 0.0924,
+      "gain_pp": -2.9334,
+      "signal_to_noise": 31.76,
+      "note": "B2 checkpoint lost; SNR uses MC dropout std as noise floor proxy. Primary B2\u2192B3 evidence: val loss \u22120.0424, TF/FG 6.19\u00d7\u21924.49\u00d7."
+    }
+  }
+}

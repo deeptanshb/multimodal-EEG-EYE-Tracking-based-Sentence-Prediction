@@ -1,0 +1,10 @@
+{
+  "subject": "ZMG",
+  "n_held_out_val": 105,
+  "holdout_bleu1": 30.15,
+  "holdout_bleu4": 4.43,
+  "holdout_rouge1": 34.97,
+  "holdout_rougeL": 29.06,
+  "within_split_bleu1": 16.09,
+  "drop_pp": 14.06
+}

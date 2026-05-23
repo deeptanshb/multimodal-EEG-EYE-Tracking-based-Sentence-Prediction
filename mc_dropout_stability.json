@@ -1,0 +1,56 @@
+{
+  "method": "MC_dropout",
+  "n_passes": 5,
+  "seeds": [
+    42,
+    123,
+    456,
+    789,
+    1024
+  ],
+  "note": "MC dropout (model.train() + torch.no_grad()). Activates stochastic dropout paths without gradient computation. Provides inference-level variance bound from stored checkpoints; does not substitute for multi-seed training runs.",
+  "Baseline_3": {
+    "checkpoint": "final_best_v9.pt",
+    "passes_bleu1": [
+      27.4843659240361,
+      27.471270110072744,
+      27.45471942860015,
+      27.490416116571016,
+      27.60062654796238
+    ],
+    "mean_bleu1": 27.500279625448478,
+    "std_bleu1": 0.051647503477366095
+  },
+  "QFP_clean": {
+    "checkpoint": "hybrid_qml_v9_best.pt",
+    "passes_bleu1": [
+      27.468820315191277,
+      27.432174192694987,
+      27.41506859123347,
+      27.51132829157671,
+      27.6002315891312
+    ],
+    "mean_bleu1": 27.48552459596553,
+    "std_bleu1": 0.06620101527381958
+  },
+  "QFP_noisy": {
+    "checkpoint": "hybrid_qml_noisy_v9_best.pt",
+    "passes_bleu1": [
+      27.46876318491431,
+      27.43378730846169,
+      27.36127042252977,
+      27.46604339223459,
+      27.59888301107863
+    ],
+    "mean_bleu1": 27.4657494638438,
+    "std_bleu1": 0.07703396622073595
+  },
+  "B2_to_B3_gain_context": {
+    "B2_corpus_bleu_training_log": 30.4,
+    "B3_mc_mean": 27.500279625448478,
+    "gain_pp": -2.8997203745515208,
+    "B3_mc_std": 0.051647503477366095,
+    "signal_to_noise_ratio": 56.14444415154139,
+    "note": "B2 checkpoint not stored; corpus BLEU taken from training log. SNR = gain / MC_std contextualises the gain vs inference noise."
+  }
+}

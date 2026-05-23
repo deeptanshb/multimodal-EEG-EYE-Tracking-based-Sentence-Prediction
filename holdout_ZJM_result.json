@@ -1,0 +1,11 @@
+{
+  "subject": "ZJM",
+  "n_removed_from_train": 895,
+  "n_held_out_val": 164,
+  "holdout_bleu1": 27.07,
+  "holdout_bleu4": 3.81,
+  "holdout_rouge1": 33.67,
+  "holdout_rougeL": 29.05,
+  "within_split_bleu1": 16.11,
+  "drop_pp": 10.96
+}
