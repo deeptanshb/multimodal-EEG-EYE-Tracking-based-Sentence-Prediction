@@ -28,12 +28,12 @@
 6. [Running the Pipeline](#6-running-the-pipeline)
 7. [Results](#7-results)
    - [Corrected locked baselines](#corrected-locked-baselines-from-process_flow_pipelineipynb-cell-3)
-   - [V9 and QML live metrics](#v9-and-qml-live-metrics)
+   - [Baseline-3 (V9) and QML live metrics](#v9-and-qml-live-metrics)
    - [Per-condition BLEU-1](#per-condition-bleu-1)
    - [Down/Up ablation — three-way](#downup-ablation--three-way)
    - [Bootstrap confidence intervals](#bootstrap-confidence-intervals)
    - [MC dropout stability](#mc-dropout-stability)
-   - [Collapse diagnostic — HTP vs Baseline-2](#collapse-diagnostic--htp-vs-baseline-2)
+   - [Collapse diagnostic — HTP vs Baseline-2 (V8)](#collapse-diagnostic--htp-vs-baseline-2)
    - [Per-subject generalisation](#per-subject-generalisation)
    - [Held-out subject evaluation](#held-out-subject-evaluation)
    - [Error analysis — five-category taxonomy](#error-analysis--five-category-taxonomy)
@@ -68,33 +68,33 @@ This project implements an end-to-end brain-computer interface (BCI) pipeline th
 - Runs a three-agent NVIDIA NIM guardrailed pipeline (Scientist → Critic → QML Synthesiser)
   to automatically interpret and peer-review the results
 - Provides an open benchmarking platform where external researchers submit their own model metrics
-  and receive structured comparative analysis against the V9+QML baseline
+  and receive structured comparative analysis against the Baseline-3 (V9)+QML baseline
 
 **Dataset:** ZuCo (Zurich Cognitive Language Processing Corpus) — 16 subjects, ~700 unique sentences,
 three reading conditions (Normal Reading / Timed Silent Reading / Speed Reading).
 
 **Key results (val n=2,032, sentence-aware split, seed=42):**
 
-> Model names follow the paper. Mapping to internal code names: Baseline-1 = V5, Baseline-2 = V8 (6-region+MoCo), Baseline-3 = V9 (B2+HTP), B3+QFP = V9+QML.
+> Model names follow the paper. Internal code names map as: Baseline-1 (V5) = single-vector prefix; Baseline-2 (V8) = 6-region+MoCo; Baseline-3 (V9) = Baseline-2 (V8)+HTP; Baseline-3 (V9)+QFP = Baseline-3 (V9)+QML.
 
 | Model (paper name) | TF BLEU-1 | TF BLEU-4 | ROUGE-1 | ROUGE-L | BERTScore F1 | FG BLEU-1 | TF/FG | Val Loss |
 |---|---|---|---|---|---|---|---|---|
-| Baseline-1 (single-vector) | 29.24% | — | 33.92% | 30.06% | — | — | — | — |
-| Baseline-2 (6-region+MoCo) | 30.40% | 4.30% | 35.78% | 30.68% | 85.46% | 4.92% | 6.19× | 4.2168 |
-| Baseline-3 (B2+HTP) | **31.02%** | 4.45% | 36.07% | 30.79% | 85.50% | 6.90% | **4.49×** | 4.1744 |
-| B3+QFP clean (noiseless VQC) | 31.00% | 4.47% | 36.04% | 30.80% | **85.51%** | 6.88% | 4.50× | 4.1733 |
-| B3+QFP noisy (HW-sim) | 31.00% | 4.47% | 36.05% | 30.79% | **85.51%** | 6.81% | 4.54× | **4.1729** |
+| Baseline-1 (V5) | 29.24% | — | 33.92% | 30.06% | — | — | — | — |
+| Baseline-2 (V8) | 30.40% | 4.30% | 35.78% | 30.68% | 85.46% | 4.92% | 6.19× | 4.2168 |
+| Baseline-3 (V9) | **31.02%** | 4.45% | 36.07% | 30.79% | 85.50% | 6.90% | **4.49×** | 4.1744 |
+| Baseline-3 (V9)+QFP clean (noiseless VQC) | 31.00% | 4.47% | 36.04% | 30.80% | **85.51%** | 6.88% | 4.50× | 4.1733 |
+| Baseline-3 (V9)+QFP noisy (HW-sim) | 31.00% | 4.47% | 36.05% | 30.79% | **85.51%** | 6.81% | 4.54× | **4.1729** |
 
-> The TF/FG ratio improvement from 6.19× (Baseline-2) to **4.49×** (Baseline-3) is the paper's central evidence of EEG-token alignment recovery — a 37% improvement. This is the primary metric, more meaningful than the modest absolute BLEU gains. Lower TF/FG means the EEG prefix is more informative relative to language priors.
+> The TF/FG ratio improvement from 6.19× (Baseline-2 (V8) to **4.49×** (Baseline-3 (V9) is the paper's central evidence of EEG-token alignment recovery — a 37% improvement. This is the primary metric, more meaningful than the modest absolute BLEU gains. Lower TF/FG means the EEG prefix is more informative relative to language priors.
 
 **Statistical validation (from paper Extended Data Table 1 and §Statistics):**
 
 | Evidence | Value | Interpretation |
 |---|---|---|
-| MC dropout std B3 (5 passes, sentence-level) | ±0.05% | Inference stochasticity floor |
-| B2→B3 corpus BLEU gain / MC std SNR | **12.0×** | Gain is 12× the noise floor — not stochasticity |
-| Bootstrap CI B3 sentence-BLEU (absolute) | [28.20%, 29.17%] | Sentence-level metric; corpus-level = 31.02% |
-| QFP clean vs Baseline-3 (paired bootstrap) | Δ=+0.008pp, p=0.668 | **Not significant** — val loss is discriminating metric |
+| MC dropout std B3 (V9) (5 passes, sentence-level) | ±0.05% | Inference stochasticity floor |
+| B2 (V8)→B3 (V9) corpus BLEU gain / MC std SNR | **12.0×** | Gain is 12× the noise floor — not stochasticity |
+| Bootstrap CI B3 (V9) sentence-BLEU (absolute) | [28.20%, 29.17%] | Sentence-level metric; corpus-level = 31.02% |
+| QFP clean vs Baseline-3 (V9) (paired bootstrap) | Δ=+0.008pp, p=0.668 | **Not significant** — val loss is discriminating metric |
 | QFP vs Down/Up projector (paired bootstrap) | Δ=+0.008pp, p=0.682 | **Not significant** on BLEU-1 |
 | Held-out ZMG BLEU-1 (30.15%) / ZJM (27.07%) | Both > 0 | Cross-subject generalisation confirmed |
 | Error analysis: semantically valid (Cat 5+6) | **74%** of 2,032 samples | BLEU-1 (31%) underestimates semantic quality |
@@ -104,13 +104,13 @@ three reading conditions (Normal Reading / Timed Silent Reading / Speed Reading)
 
 ## 2. Architecture Evolution
 
-### V5 — Baseline
+### Baseline-1 (V5) — Baseline
 
 - Conv1D + Bidirectional GRU EEG encoder, single mean-pooled EEG vector
 - Prefix-tuned DistilGPT-2 decoder, no eye-tracking or spectral features
 - **TF BLEU-1: 29.24% | ROUGE-1: 33.92%** | Per-condition: NR=30.70% TSR=32.78% SR=26.49%
 
-### V8 — Multimodal Multi-Region with Contrastive Learning
+### Baseline-2 (V8) — Multimodal Multi-Region with Contrastive Learning
 
 Key additions:
 
@@ -124,7 +124,7 @@ Key additions:
 - **TF BLEU-1: 30.40% | ROUGE-1: 35.78% | BERTScore: 85.46%** | TF/FG: 6.19×
 - Per-condition: NR=30.90% TSR=32.93% SR=27.20%
 
-### V9 — Hierarchical Temporal Pooling (HTP)
+### Baseline-3 (V9) — Hierarchical Temporal Pooling (HTP)
 
 Key fix:
 
@@ -137,7 +137,7 @@ Key fix:
 - **TF BLEU-1: 31.02% | ROUGE-1: 36.07% | BERTScore F1: 85.50%** | TF/FG: **4.49×** (was 6.19×; 37% alignment gain) | FG BLEU-1: **6.90%** | val loss: 4.1744
 - Per-condition: NR=31.53% TSR=**33.77%** SR=27.46% (TSR leads — VWFA dominates under timed presentation)
 
-### V9+QML clean — Quantum Fusion Projector (noiseless)
+### Baseline-3 (V9)+QML clean — Quantum Fusion Projector (noiseless)
 
 Key addition:
 
@@ -154,13 +154,13 @@ Key addition:
 
 **Down/Up ablation** (`ClassicalDownUpProjector`, Cell 26): same position as QFP, 768→4 GELU→768 + LayerNorm
 residual, 6,160 parameters. Sentence-level BLEU-1 = 28.70% — **statistically identical** to QFP (28.69%)
-and B3 (28.69%); bootstrap p=0.682, CI [−0.028,+0.046]. Val loss 4.2062 > B3 4.1744 — the linear
+and B3 (V9) (28.69%); bootstrap p=0.682, CI [−0.028,+0.046]. Val loss 4.2062 > B3 (V9) 4.1744 — the linear
 bottleneck hurts; QFP is the only tested projector that reduces val loss (−0.0011).
 Checkpoint saved as `final_best_v9_downup_only.pt`.
 
-### V9+QML noisy — Hardware-Realistic Noise Simulation
+### Baseline-3 (V9)+QML noisy — Hardware-Realistic Noise Simulation
 
-Key addition on top of V9+QML clean:
+Key addition on top of Baseline-3 (V9)+QML clean:
 
 - **NoisyQuantumFusionProjector** — same VQC + hardware-realistic noise channels:
   - `DepolarizingChannel(p=0.01)` after each encoding gate (1% gate error)
@@ -337,7 +337,7 @@ PROJECT1/
 ├── ── COMPARISON OUTPUT ────────────────────────────────────────────────
 │
 ├── comparison_eegconformer_lora_v1.json   # Sample external researcher comparison result
-│                                          #   EEGConformer_LoRA_v1 vs V9+QML baseline
+│                                          #   EEGConformer_LoRA_v1 vs Baseline-3 (V9)+QML baseline
 │                                          #   4 agents · 18.2s · 100% guardrail pass
 │
 ├── ── DATA & SCALERS ───────────────────────────────────────────────────
@@ -380,20 +380,20 @@ PROJECT1/
 | `nat_eeg_agents_product.ipynb` | **Product notebook** — inference + guardrailed agents + benchmark |
 | `data_extraction.ipynb` | ZuCo `.mat` → pickle extractor |
 | `eeg_product/nat_agents_guardrailed.py` | Agent prompts, NIM caller, pipeline orchestrator |
-| `eeg_product/eeg_submission_schema.py` | Submission dataclass + V5/V8/V9_QML/V9_QML_NOISY baselines |
+| `eeg_product/eeg_submission_schema.py` | Submission dataclass + Baseline-1 (V5)/Baseline-2 (V8)/V9_QML/V9_QML_NOISY baselines |
 | `eeg_product/comparison_pipeline.py` | 4-agent comparison for external researchers |
 | `eeg_product/external_researcher_template.ipynb` | Template notebook for external users |
 | `eeg_product/guardrails_config/` | NeMo Guardrails config, Colang 1.0 flows, Python actions |
 | `eeg_product/benchmark/nim_benchmark.py` | TTFT / latency / throughput harness |
 | `app.py` | Streamlit 11-page analysis dashboard |
 | `nat_v9_qml_results.json` | Live metrics + agent outputs + benchmark + guardrail audit |
-| `bootstrap_ci_results.json` | Bootstrap CIs — absolute (B3, QFP) + paired (QFP vs V9, vs down/up) |
-| `mc_dropout_stability.json` | MC dropout: 5-pass BLEU-1 per model, B2→B3 SNR evidence |
+| `bootstrap_ci_results.json` | Bootstrap CIs — absolute (B3 (V9), QFP) + paired (QFP vs Baseline-3 (V9), vs down/up) |
+| `mc_dropout_stability.json` | MC dropout: 5-pass BLEU-1 per model, B2 (V8)→B3 (V9) SNR evidence |
 | `error_analysis_summary.json` | 5-category error taxonomy summary + LaTeX Table S3 string |
 | `error_analysis_results.json` | Full 2,032-sample per-sentence error analysis records |
 | `diagnose_collapse.py` | Standalone collapse diagnostic — `python diagnose_collapse.py --weights b3_htp_attn.npy --T 256` |
 | `b3_htp_attn.npy` | Real HTP local_attn weights from `final_best_v9.pt` (shape: 12,192 × 8 × 32) |
-| `b2_simulated_attn.npy` | Simulated Baseline-2 collapse baseline (1/256+ε; max deviation < 0.0002) |
+| `b2_simulated_attn.npy` | Simulated Baseline-2 (V8) collapse baseline (1/256+ε; max deviation < 0.0002) |
 | `holdout_ZMG_result.json` | ZMG held-out: sent BLEU-1=30.15%, val loss=4.2948, Δval=+0.1219 |
 | `holdout_ZJM_result.json` | ZJM held-out: sent BLEU-1=27.07%, val loss=4.4706, Δval=+0.2977 |
 | `comparison_eegconformer_lora_v1.json` | Sample external comparison output |
@@ -550,10 +550,10 @@ Cell  69     → Error categorisation: 5 cats in priority order → per-conditio
 Cell  70     → Representative examples per category → examples_for_paper dict
 Cell  71     → LaTeX Table S3 generation (Supplementary Methods)
 Cell  72     → Save → error_analysis_summary.json + error_analysis_results.json
-Cell  73     → Load Baseline-3 checkpoint, apply LoRA scaffolding, register forward hooks on
+Cell  73     → Load Baseline-3 (V9) checkpoint, apply LoRA scaffolding, register forward hooks on
                all 6 HTP modules across all RegionEncoders, run forward pass on 2,032-sample
                val set, concatenate captured local_attn arrays → b3_htp_attn.npy
-               Construct simulated Baseline-2 collapse (1/256+ε) → b2_simulated_attn.npy
+               Construct simulated Baseline-2 (V8) collapse (1/256+ε) → b2_simulated_attn.npy
 Cell  74     → Run diagnose_collapse.py on both .npy files:
                diagnose(alpha_htp, T=256)  → HEALTHY  (max_w=0.034, H=4.96 nats, 8.75× uniform)
                diagnose(alpha_col, T=256)  → COLLAPSED (max_w=0.007, H=5.53 nats, 1.74× uniform)
@@ -616,7 +616,7 @@ See §11. Researchers open `eeg_product/external_researcher_template.ipynb`, fil
 > These values are hard-coded into `eeg_product/nat_agents_guardrailed.py` cell 3 and
 > `eeg_product/eeg_submission_schema.py`. Do not change them.
 
-| Metric | V5 | V8 |
+| Metric | Baseline-1 (V5) | Baseline-2 (V8) |
 |--------|----|----|
 | TF BLEU-1 | 29.24% | 30.40% |
 | TF BLEU-4 | — | 4.30% |
@@ -631,13 +631,13 @@ See §11. Researchers open `eeg_product/external_researcher_template.ipynb`, fil
 
 > ⚠️ Note: Earlier versions of this README contained stale values (ROUGE-1=36.01%, BERTScore=85.53%,
 > FG BLEU-1=4.91%). The values above are the authoritative numbers from `final.ipynb` cell 22 / cell 3.
-> Corrected: FG BLEU-1=4.91%, all V9/QML metrics updated from actual evaluation run.
+> Corrected: FG BLEU-1=4.91%, all Baseline-3 (V9)/QML metrics updated from actual evaluation run.
 
-### V9 and QML live metrics (from `nat_v9_qml_results.json`)
+### Baseline-3 (V9) and QML live metrics (from `nat_v9_qml_results.json`)
 
 > Values below are from the live agent-run inference pass on 2,032 val samples. Small differences (≤0.05pp) from training-run Table 3 are due to inference-session floating-point non-determinism.
 
-| Metric | Baseline-2 (V8) | Baseline-3 (V9) | B3+QML clean | B3+QML noisy | Δ B2→B3 | Δ B3→QML |
+| Metric | Baseline-2 (V8) | Baseline-3 (V9) | Baseline-3 (V9)+QML clean | Baseline-3 (V9)+QML noisy | Δ B2 (V8)→B3 (V9) | Δ B3 (V9)→QML |
 |--------|----------------|----------------|-------------|-------------|---------|---------|
 | TF BLEU-1 | 30.40% | 30.97% | 30.95% | 30.95% | +0.57pp | −0.02pp |
 | TF BLEU-4 | 4.30% | 4.45% | 4.47% | 4.47% | +0.15pp | +0.02pp |
@@ -650,7 +650,7 @@ See §11. Researchers open `eeg_product/external_researcher_template.ipynb`, fil
 
 ### Per-condition BLEU-1
 
-From paper Table 7 (n=2,032 val; NR=639, TSR=720, SR=673). TSR leads all conditions from Baseline-2 onward — consistent with VWFA dominance under word-by-word timed presentation.
+From paper Table 7 (n=2,032 val; NR=639, TSR=720, SR=673). TSR leads all conditions from Baseline-2 (V8) onward — consistent with VWFA dominance under word-by-word timed presentation.
 
 | Condition | Baseline-1 (V5) | Baseline-2 (V8) | Baseline-3 (V9) | QML clean | QML noisy | Δ B1→best |
 |-----------|-----------------|-----------------|----------------|-----------|-----------|-----------|
@@ -659,7 +659,7 @@ From paper Table 7 (n=2,032 val; NR=639, TSR=720, SR=673). TSR leads all conditi
 | SR | 26.49% | 27.20% | 27.46% | 27.37% | 27.30% | +0.26pp |
 | TSR−SR gap | 6.29pp | 5.73pp | 6.31pp | 6.50pp | **6.63pp** | — |
 
-> TSR leads all conditions in all models from Baseline-2 onward. Noisy QML is within 0.07pp of clean QML across all three conditions — condition-level noise robustness confirmed. SR has the smallest absolute gain (+0.26pp) because Speed Reading produces weaker EEG signal (shorter fixation durations).
+> TSR leads all conditions in all models from Baseline-2 (V8) onward. Noisy QML is within 0.07pp of clean QML across all three conditions — condition-level noise robustness confirmed. SR has the smallest absolute gain (+0.26pp) because Speed Reading produces weaker EEG signal (shorter fixation durations).
 
 ### Down/Up Ablation — Three-Way
 
@@ -667,18 +667,18 @@ From paper Table 7 (n=2,032 val; NR=639, TSR=720, SR=673). TSR leads all conditi
 residual, 6,160 parameters — no quantum circuit. Sentence-level smoothed BLEU-1 (per-sample mean)
 used for all three variants so relative differences are valid.
 
-| Variant | Sentence BLEU-1 | ROUGE-1 | Val Loss | Δ val loss vs B3 |
+| Variant | Sentence BLEU-1 | ROUGE-1 | Val Loss | Δ val loss vs B3 (V9) |
 |---------|-----------------|---------|----------|-----------------|
-| Baseline-3 classical (no projector) | 28.69% | 33.72% | 4.1744 | baseline |
-| Baseline-3 + Down/Up (classical, 768→4→768) | 28.70% | 33.76% | 4.2062 | **+0.0318 (worse)** |
-| Baseline-3 + QFP clean (VQC) | 28.69% | 33.74% | **4.1733** | −0.0011 (better) |
-| Baseline-3 + QFP noisy (VQC+noise) | 28.69% | 33.75% | **4.1729** | −0.0015 (best) |
+| Baseline-3 (V9) classical (no projector) | 28.69% | 33.72% | 4.1744 | baseline |
+| Baseline-3 (V9) + Down/Up (classical, 768→4→768) | 28.70% | 33.76% | 4.2062 | **+0.0318 (worse)** |
+| Baseline-3 (V9) + QFP clean (VQC) | 28.69% | 33.74% | **4.1733** | −0.0011 (better) |
+| Baseline-3 (V9) + QFP noisy (VQC+noise) | 28.69% | 33.75% | **4.1729** | −0.0015 (best) |
 
 > **Key result (from paper Table 6):** Sentence-level BLEU-1 is statistically **flat** across all three
 > variants (28.69–28.70%). Bootstrap B=10,000, n=2,032:
-> QFP vs B3: Δ=+0.008pp, 95% CI [−0.029,+0.047], **p=0.668** — not significant.
+> QFP vs Baseline-3 (V9): Δ=+0.008pp, 95% CI [−0.029,+0.047], **p=0.668** — not significant.
 > QFP vs down/up: Δ=+0.008pp, 95% CI [−0.028,+0.046], **p=0.682** — not significant.
-> **Val loss is the discriminating metric.** The 4-dim linear bottleneck hurts (d/u 4.2062 > B3 4.1744);
+> **Val loss is the discriminating metric.** The 4-dim linear bottleneck hurts (d/u 4.2062 > B3 (V9) 4.1744);
 > QFP is the only tested projector that reduces val loss (−0.0011) — attributable to bounded [−1,1]
 > expectation-value output acting as implicit regularisation at ZuCo's 11,955-sample scale.
 > Checkpoint: `final_best_v9_downup_only.pt`.
@@ -693,17 +693,17 @@ averaged per sample) — ≈2.3pp lower than corpus BLEU by construction. Saved 
 
 | Comparison | Δ (pp) | 95% CI | p-value | Significant? |
 |------------|--------|--------|---------|-------------|
-| QFP clean vs Baseline-3 | +0.008 | [−0.029, +0.047] | **0.668** | ❌ No |
+| QFP clean vs Baseline-3 (V9) | +0.008 | [−0.029, +0.047] | **0.668** | ❌ No |
 | QFP clean vs Down/Up only | +0.008 | [−0.028, +0.046] | **0.682** | ❌ No |
-| ROUGE-1: QFP vs Baseline-3 | +0.025 | [−0.015, +0.068] | 0.242 | ❌ No |
+| ROUGE-1: QFP vs Baseline-3 (V9) | +0.025 | [−0.015, +0.068] | 0.242 | ❌ No |
 
-> No comparison approaches significance. **Val loss is the primary discriminating metric** (d/u 4.2062 > B3 4.1744 > QFP 4.1733 > noisy 4.1729). No correction for multiple comparisons was applied; Bonferroni threshold at α=0.05 across 6 tests would be p<0.0083; all p>0.65.
+> No comparison approaches significance. **Val loss is the primary discriminating metric** (d/u 4.2062 > B3 (V9) 4.1744 > QFP 4.1733 > noisy 4.1729). No correction for multiple comparisons was applied; Bonferroni threshold at α=0.05 across 6 tests would be p<0.0083; all p>0.65.
 
 **Part B — Absolute 95% CIs (sentence-level BLEU-1):**
 
 | Model | Mean sent. BLEU-1 | 95% CI |
 |-------|------------------|--------|
-| Baseline-3 | 28.69% | [28.20%, 29.17%] |
+| Baseline-3 (V9) | 28.69% | [28.20%, 29.17%] |
 | QFP clean | 28.69% | [28.21%, 29.18%] |
 
 > Note: sentence-level means (≈28.7%) differ from corpus BLEU (31.02%) by 2.3pp — two separate metrics computed by different functions on the same outputs. Both are real; sentence-level is required for per-sample bootstrap resampling.
@@ -717,7 +717,7 @@ Saved to `mc_dropout_stability.json`.
 
 | Model | MC mean sent. BLEU-1 | Std | 95% spread |
 |-------|---------------------|-----|-----------|
-| Baseline-3 | 27.50% | **±0.05%** | [27.45%, 27.60%] |
+| Baseline-3 (V9) | 27.50% | **±0.05%** | [27.45%, 27.60%] |
 | QFP clean | 27.49% | ±0.07% | [27.42%, 27.60%] |
 | QFP noisy | 27.47% | ±0.08% | [27.36%, 27.60%] |
 
@@ -727,29 +727,29 @@ Saved to `mc_dropout_stability.json`.
 > by ≈1.2pp. Total gap: 31.02% − 27.50% = 3.52pp (2.3pp metric + 1.2pp dropout).
 > **Only the std (±0.05%) carries interpretive weight — not the mean.**
 
-**B2→B3 gain evidence synthesis:**
+**B2 (V8)→B3 (V9) gain evidence synthesis:**
 
 | Evidence | Value | Interpretation |
 |----------|-------|---------------|
-| Corpus BLEU delta (B2→B3) | +0.62pp | Raw gain reported in paper |
-| B3 MC dropout std (sentence-level) | **±0.05%** | Inference stochasticity floor |
+| Corpus BLEU delta (B2 (V8)→B3 (V9)) | +0.62pp | Raw gain reported in paper |
+| B3 (V9) MC dropout std (sentence-level) | **±0.05%** | Inference stochasticity floor |
 | Gain / MC std SNR | **12.0×** | Corpus gain (0.62pp) is 12× the dropout noise floor |
-| Val loss delta B2→B3 | −0.0424 | Most direct threshold-independent evidence |
+| Val loss delta B2 (V8)→B3 (V9) | −0.0424 | Most direct threshold-independent evidence |
 
-> The B2→B3 corpus BLEU gain (+0.62pp) is **12× larger** than the entire stochastic variation
+> The B2 (V8)→B3 (V9) corpus BLEU gain (+0.62pp) is **12× larger** than the entire stochastic variation
 > range under degraded MC-dropout inference (±0.05%). The gain cannot be attributed to inference-level
-> stochasticity. Baseline-2 checkpoint was not retained so a paired bootstrap on the B2→B3 delta
+> stochasticity. Baseline-2 (V8) checkpoint was not retained so a paired bootstrap on the B2 (V8)→B3 (V9) delta
 > is not possible; MC dropout stability and deterministic val loss (Δ=−0.0424) serve as primary evidence.
 
-### Collapse Diagnostic — HTP vs Baseline-2
+### Collapse Diagnostic — HTP vs Baseline-2 (V8)
 
-From notebook Cells 73–74 and `diagnose_collapse.py`. Run on Baseline-3 checkpoint
+From notebook Cells 73–74 and `diagnose_collapse.py`. Run on Baseline-3 (V9) checkpoint
 (`final_best_v9.pt`), n=12,192 samples (2,032 val × 6 regions). Confirms the three
 cross-paradigm predictions stated in the paper (§"Collapse generalisability").
 
 **Results:**
 
-| Metric | HTP (Baseline-3) | Simulated collapse (Baseline-2) |
+| Metric | HTP (Baseline-3 (V9) | Simulated collapse (Baseline-2 (V8) |
 |--------|------------------|---------------------------------|
 | Mean max attention weight | **0.034** (8.75× uniform 1/T) | 0.007 (1.74× uniform 1/T) |
 | Attention entropy | **4.96 nats** (89.5% of H_max) | 5.53 nats (99.6% of H_max) |
@@ -767,7 +767,7 @@ Uniform baseline: 1/T = 1/256 = 0.0039. H_max = log(256) = 5.55 nats.
 
 > HTP max-weight 0.034 is **8.75×** the uniform baseline — consistent with the predicted T/ℓ=256/32=8×
 > recovery factor. Entropy 4.96 nats = 89.5% of H_max — substantial temporal structure retained.
-> The simulated Baseline-2 array sits at 99.6% of H_max, functionally equivalent to mean-pooling,
+> The simulated Baseline-2 (V8) array sits at 99.6% of H_max, functionally equivalent to mean-pooling,
 > consistent with the empirical measurement in the paper (max deviation < 0.0002 from 1/256).
 
 **Reproduce:**
@@ -781,7 +781,7 @@ python diagnose_collapse.py --weights b2_simulated_attn.npy --T 256
 
 Files: `diagnose_collapse.py`, `b3_htp_attn.npy`, `b2_simulated_attn.npy`.
 
-### Per-subject generalisation (V9+QML noisy model, n=2,032 val pooled)
+### Per-subject generalisation (Baseline-3 (V9)+QML noisy model, n=2,032 val pooled)
 
 Two complementary per-subject analyses are available: **free-generation BLEU-1** (FG, ~16–17%)
 and **teacher-forcing BLEU-1** (TF, ~30–31%). Both confirm uniform cross-subject generalisation
@@ -813,7 +813,7 @@ with range < 1pp and no outliers.
 #### Teacher-Forcing BLEU-1 (TF) — from notebook Cell 57
 
 TF uses argmax over teacher-conditioned logits — higher than FG because ground-truth tokens are
-provided as context at each step. The TF/FG gap (**4.49×** for Baseline-3) is the key conditioning-strength metric.
+provided as context at each step. The TF/FG gap (**4.49×** for Baseline-3 (V9) is the key conditioning-strength metric.
 
 **Overall TF BLEU-1 (all subjects pooled): 30.95%**
 - Per-subject mean ± std: **30.87 ± 0.28 pp**
@@ -844,7 +844,7 @@ model val loss (4.1729); larger Δ for ZJM is consistent with its larger held-ou
 > ✅ Both subjects produce **positive** above-chance decoding on data the model has never seen during training.
 > Val loss degradation scales predictably with samples removed (ZMG +0.1219, ZJM +0.2977) — consistent
 > with the model learning subject-specific statistics that improve prediction. Crucially, both holdout
-> val losses remain below the Baseline-3 classical full-data val loss (4.1744), confirming that QFP
+> val losses remain below the Baseline-3 (V9) classical full-data val loss (4.1744), confirming that QFP
 > regularisation benefit persists even in the reduced-data setting.
 > ZMG chosen as best-case (n=105, smallest holdout); ZJM as harder stress-test (n=164, larger).
 > Checkpoints: `hybrid_qml_noisy_holdout_ZMG.pt`, `hybrid_qml_noisy_holdout_ZJM.pt`.
@@ -852,7 +852,7 @@ model val loss (4.1729); larger Δ for ZJM is consistent with its larger held-ou
 ### Error Analysis — Four-Category Taxonomy
 
 From paper Supplementary Table S3 (Discussion §"Error analysis and the case for BERTScore").
-Applied to all 2,032 validation samples using B3+QFP noisy. Trailing EOS-token blobs
+Applied to all 2,032 validation samples using Baseline-3 (V9)+QFP noisy. Trailing EOS-token blobs
 (`TheThe…`, present in ~98% of TF outputs) stripped uniformly before scoring via
 regex `(.{2,8})\1{5,}`. BERTScore F1 with `roberta-large`.
 
@@ -901,17 +901,17 @@ Only four categories appear:**
 ### Three domain-specific agents
 
 All three agents are defined in `eeg_product/nat_agents_guardrailed.py` with `[ROLE:]` tags,
-explicit Out-of-scope sections, and corrected V8 baselines.
+explicit Out-of-scope sections, and corrected Baseline-2 (V8) baselines.
 
 **Scientist Agent** `[ROLE: scientist]`
 Given flat-text metric summary (~220 input tokens), produces a structured 8-section research analysis:
-1. Dataset & Setup, 2. **Five**-model progression (V5→V8→V9→QML clean→QML noisy), 3. TF Performance,
+1. Dataset & Setup, 2. **Five**-model progression (Baseline-1 (V5)→Baseline-2 (V8)→Baseline-3 (V9)→QML clean→QML noisy), 3. TF Performance,
 4. FG Performance & TF/FG ratio, 5. Per-condition NR/TSR/SR,
 6. Attention diagnosis (HTP + cross-region + neuroscience), 7. Qualitative samples, 8. Conclusions (4 bullets).
 
 **Critic Agent** `[ROLE: critic]`
 Reads the Scientist's first 500 chars + authoritative key numbers. Produces `[ISSUE-N] / Problem / Fix`
-format, ending with Verdict and Confidence score. Hard-codes V8 baselines to prevent hallucination.
+format, ending with Verdict and Confidence score. Hard-codes Baseline-2 (V8) baselines to prevent hallucination.
 
 **QML Synthesiser** `[ROLE: qml_synthesiser]` *(replaces original "Explainer")*
 Focused on the QuantumFusionProjector circuit mechanics — down-projection, AngleEmbedding, VQC,
@@ -1060,7 +1060,7 @@ python benchmark/nim_benchmark.py \
 
 ## 11. External Researcher Interface
 
-Any EEG-to-text researcher working on ZuCo can compare their model against the V9+QML baseline
+Any EEG-to-text researcher working on ZuCo can compare their model against the Baseline-3 (V9)+QML baseline
 without needing your model code, checkpoints, or the ZuCo data.
 
 ### What they need
@@ -1106,17 +1106,17 @@ results = await run_comparison_pipeline(my_model)
 | Agent | Role | Output |
 |-------|------|--------|
 | Scientist | Analyse submitted model architecture and metrics | 8-section research analysis |
-| Comparator | Head-to-head table vs V9+QML | Per-metric BETTER/EQUIVALENT/WORSE/N/A verdicts |
+| Comparator | Head-to-head table vs Baseline-3 (V9)+QML | Per-metric BETTER/EQUIVALENT/WORSE/N/A verdicts |
 | Critic | Challenge methodology and statistical significance | [ISSUE-N] format + ACCEPT/REVISE verdict |
 | Synthesiser | Plain-language summary | 4 paragraphs + one specific next step |
 
 ### Frozen baseline values
 
 All comparisons are automatically made against:
-- **V5**: BLEU-1=29.24%, ROUGE-1=33.92% (locked constant in `eeg_submission_schema.py`)
-- **V8**: BLEU-1=30.40%, ROUGE-1=35.78%, BERTScore=85.46% (locked constant)
-- **V9+QML clean**: loaded live from `nat_v9_qml_results.json` via `load_v9_qml_baseline()`
-- **V9+QML noisy**: loaded live from `nat_v9_qml_results.json` via `load_v9_qml_noisy_baseline()`
+- **Baseline-1 (V5)**: BLEU-1=29.24%, ROUGE-1=33.92% (locked constant in `eeg_submission_schema.py`)
+- **Baseline-2 (V8)**: BLEU-1=30.40%, ROUGE-1=35.78%, BERTScore=85.46% (locked constant)
+- **Baseline-3 (V9)+QML clean**: loaded live from `nat_v9_qml_results.json` via `load_v9_qml_baseline()`
+- **Baseline-3 (V9)+QML noisy**: loaded live from `nat_v9_qml_results.json` via `load_v9_qml_noisy_baseline()`
   (hardware-realistic simulation; val loss=4.1729; noise params: DepolarizingChannel p=0.01 + PhaseDamping γ=0.02)
 
 ---
@@ -1135,13 +1135,13 @@ streamlit run app.py
 |------|----------|
 | 🏠 **Overview** | Architecture evolution table, key metric cards (5 metrics), ZuCo conditions, brain regions table |
 | 📉 **Training Curves** | Stage 0 MoCo loss + Stage 1/2 train/val + full cumulative timeline (plotly dark theme) |
-| 📊 **Model Comparison** | Overall metrics bar chart (V5/V8/V9/QML), TF/FG ratio chart, full 4-model table, per-condition grouped bars, radar chart |
-| 🧠 **EEG Attention** | Interactive HTP attention waveform by region+condition, attention norm bars vs V8 collapse baseline, cross-region fusion by condition, neuroscience reference table |
+| 📊 **Model Comparison** | Overall metrics bar chart (Baseline-1 (V5)/Baseline-2 (V8)/Baseline-3 (V9)/QML), TF/FG ratio chart, full 4-model table, per-condition grouped bars, radar chart |
+| 🧠 **EEG Attention** | Interactive HTP attention waveform by region+condition, attention norm bars vs Baseline-2 (V8) collapse baseline, cross-region fusion by condition, neuroscience reference table |
 | 🔬 **Architecture** | Parameter breakdown pie + horizontal bar, 9-token prefix table, stage training summary, RegionEncoderV9+HTP code |
-| 💬 **Qualitative Samples** | Per-condition target vs V9 TF/FG vs QML TF/FG, token overlap heatmap, alpha sweep chart |
-| ⚛️ **Quantum Fusion** | VQC architecture code, parameter comparison table, val loss comparison Stage 2 vs QML, BLEU-1 progression bar; **three-way ablation** (V9 classical vs Down/Up vs QFP) bar chart + table; **bootstrap CI section** (absolute CIs, paired CIs table, significance interpretation) |
+| 💬 **Qualitative Samples** | Per-condition target vs Baseline-3 (V9) TF/FG vs QML TF/FG, token overlap heatmap, alpha sweep chart |
+| ⚛️ **Quantum Fusion** | VQC architecture code, parameter comparison table, val loss comparison Stage 2 vs QML, BLEU-1 progression bar; **three-way ablation** (Baseline-3 (V9) classical vs Down/Up vs QFP) bar chart + table; **bootstrap CI section** (absolute CIs, paired CIs table, significance interpretation) |
 | 👥 **Per-Subject Analysis** | Three tabs: (1) FG BLEU-1 horizontal bar + scatter, (2) TF BLEU-1 per subject (Cell 57, overall 30.95%), (3) Held-out subject retraining — ZMG/ZJM within-split vs holdout comparison |
-| 🔍 **Error Analysis** | Five tabs: Category Overview (taxonomy table + distribution + score charts), Per-Condition Breakdown (SR vs NR/TSR semantic-drift gap), BERTScore vs BLEU-1 scatter with threshold lines, Representative Examples per category, MC Dropout Stability + B2→B3 evidence synthesis |
+| 🔍 **Error Analysis** | Five tabs: Category Overview (taxonomy table + distribution + score charts), Per-Condition Breakdown (SR vs NR/TSR semantic-drift gap), BERTScore vs BLEU-1 scatter with threshold lines, Representative Examples per category, MC Dropout Stability + B2 (V8)→B3 (V9) evidence synthesis |
 | 🛡️ **NVIDIA Stack** | Live benchmark table + latency/TTFT charts, guardrail architecture (3 columns), NIM endpoint routing code, `config.yml` + `rails.co` display |
 | 🤖 **NAT Agents** | 3-agent pipeline cards, system prompts viewer, `agent_stats` JSON preview, **live agent runner** (enter API key → runs all 3 agents with guardrail badges and timing) |
 
@@ -1193,12 +1193,12 @@ All figures saved to `plots/`.
 |------|-------------|
 | `plot_loss_curves.png` | Stage 0 MoCo InfoNCE + Stage 1 train/val + Stage 2 LoRA train/val |
 | `plot_overfitting.png` | Overfitting diagnosis: Stage 1 gap controlled at ~0.13 vs old 1.65 |
-| `plot_per_condition_bleu.png` | Grouped bar: V5/V8/V9/QML clean/QML noisy per condition (NR/TSR/SR) |
-| `plot_metrics_comparison.png` | All five metrics (BLEU-1/4, ROUGE-1/L, BERTScore) V8→V9→QML clean→noisy |
+| `plot_per_condition_bleu.png` | Grouped bar: Baseline-1 (V5)/Baseline-2 (V8)/Baseline-3 (V9)/QML clean/QML noisy per condition (NR/TSR/SR) |
+| `plot_metrics_comparison.png` | All five metrics (BLEU-1/4, ROUGE-1/L, BERTScore) Baseline-2 (V8)→Baseline-3 (V9)→QML clean→noisy |
 | `plot_val_timeline.png` | Unified val loss: Stage 1 (coral) + Stage 2 (amber) + QML clean (purple) + QML noisy (pink) |
 | `plot_stage0_convergence.png` | MoCo InfoNCE over 20 epochs with plateau annotation |
 | `plot_stage2_improvement.png` | Stage 2 LoRA + QML clean + QML noisy (3-panel, early stop on ep 8) |
-| `plot_inference_comparison.png` | 4-model bar chart (V8/V9/QML clean/QML noisy) — BLEU-1/4, ROUGE-1/L |
+| `plot_inference_comparison.png` | 4-model bar chart (Baseline-2 (V8)/Baseline-3 (V9)/QML clean/QML noisy) — BLEU-1/4, ROUGE-1/L |
 | `diag1_pool_attn_collapse.png` | 6-panel attention distributions — 4 collapsed regions (H/Hmax>0.95) |
 | `diag2_v9_fusion_weights.png` | Cross-region fusion weights heatmap per condition |
 | `attn_htp_NR.png` | HTP local attention profiles — Normal Reading |
@@ -1221,28 +1221,28 @@ All figures saved to `plots/`.
 
 ### What worked
 
-1. **HTP fixed temporal pooling collapse — the paper's central contribution.** Baseline-2's flat `pool_attn Linear(D,1)` had uniform 1/256 ≈ 0.0039 attention across all timesteps and all six regions (max deviation < 0.0002) — equivalent to mean-pooling. HTP's two-level softmax (32-way local + 8-way segment) recovers attention norms **10–30×** (Table 4): Left Parieto-Occipital 30.9×, Left Temporal 28.8×. The collapse is proven mathematically inevitable for any architecture using single-level softmax over T ≥ 128 timesteps — it is an architectural property, not an optimisation failure.
+1. **HTP fixed temporal pooling collapse — the paper's central contribution.** Baseline-2 (V8)'s flat `pool_attn Linear(D,1)` had uniform 1/256 ≈ 0.0039 attention across all timesteps and all six regions (max deviation < 0.0002) — equivalent to mean-pooling. HTP's two-level softmax (32-way local + 8-way segment) recovers attention norms **10–30×** (Table 4): Left Parieto-Occipital 30.9×, Left Temporal 28.8×. The collapse is proven mathematically inevitable for any architecture using single-level softmax over T ≥ 128 timesteps — it is an architectural property, not an optimisation failure.
 
    **Empirically confirmed by `diagnose_collapse.py` (Cells 73–74, n=12,192 samples):**
    - HTP mean max weight: **0.034** (8.75× uniform) — attention is genuinely selective
    - HTP entropy: **4.96 nats** (89.5% of H_max=5.55) — substantial structure, not near-maximal
-   - Simulated Baseline-2: 0.007 max weight (1.74× uniform), 5.53 nats (99.6% H_max) — **COLLAPSED**
+   - Simulated Baseline-2 (V8): 0.007 max weight (1.74× uniform), 5.53 nats (99.6% H_max) — **COLLAPSED**
    - Recovery factor 8.75× is consistent with the predicted T/ℓ = 256/32 = 8× from the paper's formal analysis
    - Reproduce: `python diagnose_collapse.py --weights b3_htp_attn.npy --T 256`
 
-2. **TF/FG ratio is the primary evidence of EEG-token alignment.** Baseline-2: 6.19×. Baseline-3: **4.49×** (37% improvement). This rightward shift in optimal EEG beam weight (α=1.0 → 4.0) directly quantifies that HTP-encoded prefixes are informative across a fourfold wider operating range. The model genuinely conditions on EEG rather than language priors — this is more meaningful than the modest BLEU gains.
+2. **TF/FG ratio is the primary evidence of EEG-token alignment.** Baseline-2 (V8): 6.19×. Baseline-3 (V9): **4.49×** (37% improvement). This rightward shift in optimal EEG beam weight (α=1.0 → 4.0) directly quantifies that HTP-encoded prefixes are informative across a fourfold wider operating range. The model genuinely conditions on EEG rather than language priors — this is more meaningful than the modest BLEU gains.
 
-3. **Neurophysiological coherence emerges from HTP.** Under TSR, VWFA/Left Parieto-Occipital dominates (fusion weight 0.263) — consistent with rapid orthographic identification. Under NR and SR, Left Parietal leads (0.243, 0.231) — consistent with semantic integration. A cross-condition P300-like central-parietal onset (0.261) appears regardless of reading speed. None of these patterns exist in Baseline-2's collapsed 1/256 baseline.
+3. **Neurophysiological coherence emerges from HTP.** Under TSR, VWFA/Left Parieto-Occipital dominates (fusion weight 0.263) — consistent with rapid orthographic identification. Under NR and SR, Left Parietal leads (0.243, 0.231) — consistent with semantic integration. A cross-condition P300-like central-parietal onset (0.261) appears regardless of reading speed. None of these patterns exist in Baseline-2 (V8)'s collapsed 1/256 baseline.
 
 4. **Freezing GPT-2 in Stage 1 eliminated overfitting.** Old Stage 1 with GPT-2 unlocked: train/val gap = 1.65 at early stop epoch 7. Fixed Stage 1 (fully frozen): gap = ~0.13 at epoch 17. Val loss 4.2009 at epoch 17. EEG encoder training must precede LLM adaptation.
 
-5. **QFP provides marginal regularisation — not a quantum advantage claim.** Val loss −0.0011 (the only tested lightweight projector to reduce val loss). All BLEU-1 differences are **statistically non-significant**: QFP vs B3 p=0.668, QFP vs Down/Up p=0.682 (bootstrap B=10,000). Val loss is the discriminating metric. The bounded [−1,1] expectation-value output acts as implicit regularisation at ZuCo's 11,955-sample scale; a classical 768→4→768 GELU projector overfits (Δval +0.0318).
+5. **QFP provides marginal regularisation — not a quantum advantage claim.** Val loss −0.0011 (the only tested lightweight projector to reduce val loss). All BLEU-1 differences are **statistically non-significant**: QFP vs Baseline-3 (V9) p=0.668, QFP vs Down/Up p=0.682 (bootstrap B=10,000). Val loss is the discriminating metric. The bounded [−1,1] expectation-value output acts as implicit regularisation at ZuCo's 11,955-sample scale; a classical 768→4→768 GELU projector overfits (Δval +0.0318).
 
 6. **QFP noisy matches clean — architecture is hardware-deployable.** Hardware-realistic noise simulation (DepolarizingChannel p=0.01, PhaseDamping γ=0.02, MC-average NMC=16) achieves val loss 4.1729 vs clean 4.1733 (Δ=−0.0004). Noise during training regularises the classical up-projection W↑. All generation metrics match exactly.
 
-7. **Cross-subject generalisation confirmed by two complementary analyses.** (a) Within-split per-subject sentence BLEU-1 range: **0.95pp** (ZMG 16.09% → YFS 17.04%, mean 16.56±0.33pp); no subject falls >1pp below the cross-subject mean. (b) Held-out retraining: ZMG achieves **30.15% sentence BLEU-1** on 105 unseen samples, ZJM **27.07%** on 164 unseen samples — both positive, both held-out val losses below Baseline-3 classical (4.1744). Val loss degradation scales predictably with held-out set size (+0.1219 ZMG, +0.2977 ZJM).
+7. **Cross-subject generalisation confirmed by two complementary analyses.** (a) Within-split per-subject sentence BLEU-1 range: **0.95pp** (ZMG 16.09% → YFS 17.04%, mean 16.56±0.33pp); no subject falls >1pp below the cross-subject mean. (b) Held-out retraining: ZMG achieves **30.15% sentence BLEU-1** on 105 unseen samples, ZJM **27.07%** on 164 unseen samples — both positive, both held-out val losses below Baseline-3 (V9) classical (4.1744). Val loss degradation scales predictably with held-out set size (+0.1219 ZMG, +0.2977 ZJM).
 
-8. **B2→B3 gain is 12× larger than the inference noise floor.** MC-dropout std (5 passes, model.train(), seeds 42/123/456/789/1024): B3 **±0.05%** std (sentence-level). Corpus B2→B3 gain (+0.62pp) / MC std = **12.0× SNR**. The gain cannot be attributed to inference-level stochasticity.
+8. **B2 (V8)→B3 (V9) gain is 12× larger than the inference noise floor.** MC-dropout std (5 passes, model.train(), seeds 42/123/456/789/1024): B3 (V9) **±0.05%** std (sentence-level). Corpus B2 (V8)→B3 (V9) gain (+0.62pp) / MC std = **12.0× SNR**. The gain cannot be attributed to inference-level stochasticity.
 
 9. **Error analysis: 74% of predictions are semantically valid; only 0.4% semantic drift.** After stripping universal EOS artefacts (~98% of TF outputs): Cat 3 (semantic drift) = **9 samples (0.4%)** — near-zero. Cat 5 (lexical substitution) = **1,169 (57.5%)** — correct topic, different words. Cat 6 (success) = **335 (16.5%)**. Cat 5+6 = **74%** semantically valid. This explains the BERTScore F1 (85.51%) vs BLEU-1 (31%) gap. TSR achieves 22.6% successful decoding; SR shows 40.7% partial recovery due to shorter fixation durations.
 
@@ -1272,8 +1272,7 @@ If you use this codebase, results, or benchmarking platform, please cite:
 @article{bhattacharya2026diagnosing,
   title   = {Temporal Attention Collapse in EEG-to-Text Decoding:
 Repair with Hierarchical Temporal Pooling and
-Anatomical Encoding via Multi-Region
-GRU–Transformers},
+Anatomical Encoding via Multi-Region GRU--Transformers},
   author  = {Bhattacharya, Deeptanshu and Shridevi, S.},
   year    = {2026},
   note    = {EEG-to-text on ZuCo (n=2,032 val). Primary finding: temporal attention collapse
